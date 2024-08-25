@@ -7,6 +7,10 @@ class ExampleFunctionPlugin(FunctionPluginBase):
         super().__init__()
         self.running = True  # A flag to control the running state
 
+    def on_initialize(self, layout=None):
+        """Plugin-specific initialization logic."""
+        self.start()  # Start the thread when initialized
+
     def run(self):
         """Override the run method with the plugin's functionality."""
         self.app_logger.info("ExampleFunctionPlugin is running.")

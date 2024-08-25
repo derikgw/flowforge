@@ -2,6 +2,7 @@ import logging.config
 import yaml
 import os
 
+
 class Logger:
     _loggers = {}
 

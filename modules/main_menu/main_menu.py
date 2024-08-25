@@ -1,23 +1,26 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QAction, QMenuBar, QApplication
-from core.logging.logger import Logger
 from core.plugins.menu_plugin_base import MenuPluginBase
 
 
 class MainMenu(MenuPluginBase):
-
     def __init__(self):
         super().__init__()
         self.menu_bar = None  # Store the menu bar
         self.menu_actions = []  # Store actions to be added to the menu
 
-    def initialize(self, layout):
+    def on_initialize(self, layout=None):
+        """Plugin-specific initialization logic."""
         self.app_logger.info("Initializing main menu")
+
         # Create the menu bar
         self.menu_bar = QMenuBar()
 
         # Add the menu bar to the provided layout
-        layout.setMenuBar(self.menu_bar)
+        if layout:
+            layout.setMenuBar(self.menu_bar)
+
+        # Add items to the menu bar
         self.add_to_menu_bar(self.menu_bar)
 
         self.app_logger.info("Main menu initialized")
