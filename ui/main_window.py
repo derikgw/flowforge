@@ -1,17 +1,13 @@
-# ui/main_window.py
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
-from PyQt5.QtGui import QIcon
-from core.module_loader import load_modules  # Updated import
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget
+from core.plugins.ui_plugin_loader import load_ui_plugins
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Set window properties
-        self.setWindowTitle("Workflow Portal")
+        self.setWindowTitle("FlowForge")
         self.setGeometry(100, 100, 1280, 720)
-        self.setWindowIcon(QIcon('assets/icon.png'))
 
         # Central widget
         central_widget = QWidget()
@@ -21,8 +17,8 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         central_widget.setLayout(layout)
 
-        # Dynamically load all modules
-        load_modules(layout)
+        # Dynamically load all plugins
+        load_ui_plugins(layout=layout)  # Pass the layout to the plugins
 
         # Load stylesheet
         with open('styles/main.qss', 'r') as stylesheet:
