@@ -19,5 +19,6 @@ class EventBus:
             for listener in self.listeners[event_name]:
                 listener(*args, **kwargs)
 
+
 # Create a global event bus instance
 event_bus = EventBus()

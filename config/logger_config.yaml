@@ -24,14 +24,14 @@ handlers:
 loggers:
   app_logger:
     level: DEBUG
-    handlers: [console, file]
-    propagate: no
+    handlers: [file]
+    propagate: yes
 
   error_logger:
     level: ERROR
-    handlers: [console, file]
-    propagate: no
+    handlers: [file]
+    propagate: yes
 
 root:
   level: WARNING
-  handlers: [console]
+  handlers: [file]

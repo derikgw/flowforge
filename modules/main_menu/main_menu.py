@@ -1,5 +1,7 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QAction, QMenuBar, QApplication
+
+from core.events.event_bus import event_bus
 from core.plugins.ui_plugin_base import UIPluginBase
 
 
@@ -11,8 +13,6 @@ class MainMenu(UIPluginBase):
 
     def on_initialize(self, layout=None, main_window=None):
         """Plugin-specific initialization logic."""
-        self.app_logger.info("Initializing MainMenu")
-
         # Create the menu bar
         self.menu_bar = QMenuBar()
 
@@ -23,8 +23,6 @@ class MainMenu(UIPluginBase):
 
         # Add items to the menu bar
         self.add_to_menu_bar(self.menu_bar)
-
-        self.app_logger.info("MainMenu initialized")
 
     def add_to_menu_bar(self, menu_bar):
         # Create a File menu
@@ -47,7 +45,11 @@ class MainMenu(UIPluginBase):
     def on_exit(self, checked):
         self.app_logger.info("Exiting the application...")
 
-        # Perform any cleanup if necessary
+        # Post the shutdown event to the event bus
+        event_bus.post("shutdown_app")
 
-        # Gracefully quit the application
-        QApplication.quit()
+        # Perform any additional cleanup if necessary
+
+        self.app_logger.info("Shutdown event posted.")
+
+
