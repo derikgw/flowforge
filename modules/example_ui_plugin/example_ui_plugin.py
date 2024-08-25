@@ -4,11 +4,11 @@ from core.plugins.ui_plugin_base import UIPluginBase
 from core.logging.logger import Logger
 
 
-class ExampleModule(UIPluginBase):
+class ExampleUiPlugin(UIPluginBase):
     def __init__(self):
         super().__init__()
 
-        self.app_logger.info("Initializing Example Module")
+        self.app_logger.info("Initializing Example UI Plugin")
 
         self.widget = QPushButton("Click me!")  # Set the widget to a QPushButton
 

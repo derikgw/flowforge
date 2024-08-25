@@ -2,27 +2,17 @@ import importlib
 import logging
 
 
-def load_plugin_class(module_name, modules_dir='modules'):
-    """
-    Load the plugin class from a module.
-
-    :param module_name: The name of the module (without the .py extension).
-    :param modules_dir: The directory where modules are located.
-    :return: The plugin class, or None if not found.
-    """
+def load_plugin_class(module_name):
     try:
-        module = importlib.import_module(f'{modules_dir}.{module_name}')
-        class_name = ''.join([part.capitalize() for part in module_name.split('_')])
-
+        module = importlib.import_module(f'modules.{module_name}')
+        # Capitalize each part of the module_name split by underscores
+        class_name = ''.join([part.capitalize() for part in module_name.split('.')[-1].split('_')])
         if hasattr(module, class_name):
-            plugin_class = getattr(module, class_name)
-            return plugin_class
+            return getattr(module, class_name)
         else:
             logging.warning(f'Class {class_name} not found in module {module_name}.')
-            return None
     except ImportError as e:
         logging.error(f'Failed to import module {module_name}: {e}')
-        return None
     except Exception as e:
         logging.error(f'Error loading module {module_name}: {e}')
-        return None
+    return None
