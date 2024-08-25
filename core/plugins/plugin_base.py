@@ -1,10 +1,8 @@
 from core.logging.logger import Logger
 
-
 class PluginBase:
     def __init__(self):
-        # self.app_logger = Logger.get_logger(self.__class__.__name__)
-          self.app_logger = Logger.get_logger("app_logger")
+        self.app_logger = Logger.get_logger(self.__class__.__name__)
 
     def initialize(self, *args, **kwargs):
         """Common initialization logic for all plugins."""

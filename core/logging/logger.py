@@ -1,6 +1,7 @@
+import logging
 import logging.config
-import yaml
 import os
+import yaml
 
 
 class Logger:
@@ -31,7 +32,21 @@ class Logger:
             if not logging.getLogger().hasHandlers():
                 cls.load_config()
 
-            # Retrieve or create the logger
+            # Create a unique logger for the plugin
             logger = logging.getLogger(name)
+            logger.setLevel(logging.DEBUG)  # Ensure the logger level is set to DEBUG
+
+            # Create a file handler for the plugin's log file
+            logs_dir = os.path.join(os.getenv('PROJECT_ROOT', ''), 'logs')
+            log_file = os.path.join(logs_dir, f"{name}.log")
+            file_handler = logging.FileHandler(log_file, encoding='utf8')
+            file_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s'))
+            logger.addHandler(file_handler)
+
+            # Optionally, also log to console
+            console_handler = logging.StreamHandler()
+            console_handler.setFormatter(logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s'))
+            logger.addHandler(console_handler)
+
             cls._loggers[name] = logger
             return logger

@@ -12,10 +12,10 @@ class ShutdownDialogPlugin(UIPluginBase):
         # Register for the shutdown event
         event_bus.register("shutdown_app", self.shutdown)
 
-    def on_initialize(self, layout=None):
+    def on_initialize(self, layout=None, *args, **kwargs):
         """Plugin-specific initialization logic."""
-        # Initialization logic for the shutdown dialog, if any
-        pass
+        # Handle additional arguments like main_window if needed
+        self.app_logger.info(f"ShutdownDialogPlugin initialized with args: {args}, kwargs: {kwargs}")
 
     def create_dialog(self, parent=None):
         self.dialog = QDialog(parent)
@@ -45,7 +45,6 @@ class ShutdownDialogPlugin(UIPluginBase):
             self.dialog.close()
 
     def shutdown(self):
-        """Handle the shutdown process."""
         self.create_dialog()
         self.show_dialog()
 

@@ -17,9 +17,9 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         central_widget.setLayout(layout)
 
-        # Initialize and manage UI plugins
+        # Initialize and manage UI plugins, pass self as the main window
         self.plugin_manager = plugin_manager
-        self.plugin_manager.initialize_ui_plugins(layout=layout)  # Only load UI plugins
+        self.plugin_manager.initialize_ui_plugins(layout=layout, main_window=self)  # Pass the main window
 
         # Load stylesheet
         with open('styles/main.qss', 'r') as stylesheet:

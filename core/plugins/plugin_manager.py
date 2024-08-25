@@ -12,14 +12,14 @@ class PluginManager:
         self.function_plugins = []  # Initialize as an empty list
         self.logger = Logger.get_logger('PluginManager')
 
-    def initialize_ui_plugins(self, layout):
+    def initialize_ui_plugins(self, layout, main_window):
         """Initialize all UI plugins."""
         # Load and initialize UI plugins
         self.ui_plugins = self.load_ui_plugins(layout)
 
         # Ensure all plugins are initialized
         for plugin in self.ui_plugins:
-            plugin.initialize(layout)
+            plugin.initialize(layout=layout, main_window=main_window)  # Pass the main window reference
 
     def initialize_function_plugins(self):
         """Initialize all function plugins."""
