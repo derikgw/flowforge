@@ -13,13 +13,12 @@ def load_function_plugins():
         if os.path.isdir(module_path):
             module_init_file = os.path.join(module_path, '__init__.py')
             if os.path.exists(module_init_file):
-                module_name = module_dir  # The directory name will be used as the module name
-                plugin_class = load_plugin_class(f'{module_name}.{module_name}')
+                plugin_class = load_plugin_class(module_dir)  # Pass the directory name as the module name
 
                 if plugin_class and issubclass(plugin_class, FunctionPluginBase):
                     instance = plugin_class()
                     instance.initialize()  # Assuming initialize is required before starting
                     loaded_plugins.append(instance)
-                    logging.info(f'Function Plugin {module_name} loaded successfully.')
+                    logging.info(f'Function Plugin {module_dir} loaded successfully.')
 
     return loaded_plugins

@@ -13,8 +13,7 @@ def load_ui_plugins(layout):
         if os.path.isdir(module_path):
             module_init_file = os.path.join(module_path, '__init__.py')
             if os.path.exists(module_init_file):
-                module_name = module_dir  # Use the directory name as the module name
-                plugin_class = load_plugin_class(f'{module_name}.{module_name}')
+                plugin_class = load_plugin_class(module_dir)  # Use the directory name as the module name
 
                 if plugin_class:
                     if issubclass(plugin_class, UIPluginBase):
@@ -23,9 +22,9 @@ def load_ui_plugins(layout):
                         widget = instance.get_widget()
                         if widget:
                             layout.addWidget(widget)
-                        logging.info(f'UI Plugin {module_name} loaded successfully.')
+                        logging.info(f'UI Plugin {module_dir} loaded successfully.')
 
                     elif issubclass(plugin_class, MenuPluginBase):
                         instance = plugin_class()
                         instance.initialize(layout)
-                        logging.info(f'Menu Plugin {module_name} loaded successfully.')
+                        logging.info(f'Menu Plugin {module_dir} loaded successfully.')
