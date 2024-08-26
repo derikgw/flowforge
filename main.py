@@ -18,6 +18,7 @@ def initialize_application():
     app_logger = Logger.get_logger("app_logger")
     error_logger = Logger.get_logger("error_logger")
     app_logger.info("Application starting...")
+
     # Initialize function plugins
     plugin_manager = PluginManager()
     plugin_manager.initialize_function_plugins()  # Only load function plugins

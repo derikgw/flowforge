@@ -24,6 +24,8 @@ class ExampleUiPlugin(UIPluginBase):
 
         # Create a dock widget
         self.dock_widget = QDockWidget("Example UI Plugin", main_window)
+        # Set the object name based on the class name
+        self.dock_widget.setObjectName(self.__class__.__name__)
 
         # Set size policy to make it resizable
         button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)

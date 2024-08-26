@@ -20,6 +20,8 @@ class PathMonitorUI(UIPluginBase):
         # Create the main widget and set it as the dock widget's widget
         self.widget = self.create_widget()
         self.dock_widget.setWidget(self.widget)
+        # Set the object name based on the class name
+        self.dock_widget.setObjectName(self.__class__.__name__)
 
         # Set the dock widget's size policy
         self.dock_widget.setSizePolicy(QWidget.sizePolicy(self.widget))
