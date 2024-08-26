@@ -51,4 +51,4 @@ class ExampleUiPlugin(UIPluginBase):
         self.app_logger.info(f"Button was clicked! Checked state is {checked}")
 
     def get_widget(self):
-        return self.widget
+        return self.dock_widget

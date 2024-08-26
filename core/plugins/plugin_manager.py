@@ -25,6 +25,9 @@ class PluginManager:
         for plugin in self.ui_plugins:
             plugin.initialize(layout=layout, main_window=main_window)
 
+        # Post an event indicating that all UI plugins have been initialized
+        event_bus.post("all_ui_plugins_initialized")
+
     def initialize_function_plugins(self):
         self.function_plugins = self.load_function_plugins()
 

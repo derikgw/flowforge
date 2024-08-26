@@ -1,5 +1,5 @@
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QAction, QMenuBar, QApplication
+from PyQt5.QtWidgets import QAction, QMenuBar, QApplication, QDockWidget
 
 from core.events.event_bus import event_bus
 from core.plugins.ui_plugin_base import UIPluginBase
@@ -51,5 +51,31 @@ class MainMenu(UIPluginBase):
         # Perform any additional cleanup if necessary
 
         self.app_logger.info("Shutdown event posted.")
+
+    def on_initialize(self, layout=None, main_window=None):
+        """Plugin-specific initialization logic."""
+        self.main_window = main_window  # Store the main window reference
+        self.menu_bar = QMenuBar()
+
+        if main_window:
+            main_window.setMenuBar(self.menu_bar)
+            self.app_logger.info("Menu bar set to main window")
+
+        self.add_to_menu_bar(self.menu_bar)
+
+        # Subscribe to the "all_ui_plugins_initialized" event
+        event_bus.register("all_ui_plugins_initialized", self.populate_views_menu)
+
+    def populate_views_menu(self):
+        # Logic to populate the Views menu after all plugins are initialized
+        views_menu = self.menu_bar.addMenu("Views")
+
+        for plugin in self.main_window.plugin_manager.ui_plugins:
+            if isinstance(plugin.get_widget(), QDockWidget):
+                action = QAction(plugin.__class__.__name__, self.menu_bar)
+                action.triggered.connect(lambda checked, p=plugin: p.get_widget().setVisible(True))
+                views_menu.addAction(action)
+
+        self.app_logger.info("Views menu populated with all UI plugins.")
 
 
