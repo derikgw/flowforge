@@ -1,0 +1,3 @@
+# manifest.yaml
+class_name: PathMonitor
+script_name: path_monitor

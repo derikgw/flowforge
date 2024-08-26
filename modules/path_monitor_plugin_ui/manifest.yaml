@@ -1,0 +1,5 @@
+# manifest.yaml
+class_name: PathMonitorUI
+script_name: path_monitor_ui
+dependencies:
+  - PathMonitor
