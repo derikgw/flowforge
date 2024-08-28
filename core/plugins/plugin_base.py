@@ -1,15 +1,30 @@
-from core.logging.logger import Logger
+from abc import ABC, abstractmethod
 
-class PluginBase:
-    def __init__(self):
-        self.app_logger = Logger.get_logger(self.__class__.__name__)
 
-    def initialize(self, *args, **kwargs):
-        """Common initialization logic for all plugins."""
-        self.app_logger.info(f'Initializing {self.__class__.__name__}')
-        self.on_initialize(*args, **kwargs)
-        self.app_logger.info(f'{self.__class__.__name__} Initialized')
+class Plugin(ABC):
+    def __init__(self, name, plugin_type, path):
+        self.name = name
+        self.plugin_type = plugin_type
+        self.path = path
 
-    def on_initialize(self, *args, **kwargs):
-        """Plugin-specific initialization logic. Override in subclasses."""
+    def get_name(self):
+        return self.name
+
+    def get_type(self):
+        return self.plugin_type
+
+    def get_path(self):
+        return self.path
+
+    @abstractmethod
+    def initialize(self):
+        """Initialize the plugin."""
         pass
+
+    def stop(self):
+        """Stop the plugin (optional)."""
+        pass
+
+    def get_widget(self):
+        """Return the UI widget if applicable (for UI plugins)."""
+        return None

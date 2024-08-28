@@ -164,3 +164,4 @@ cython_debug/
 
 # Sensitive files
 **/*sensitive*
+*.jar

@@ -1,0 +1,129 @@
+/* Main window */
+QMainWindow {
+    background-color: white;
+    color: black;
+}
+
+/* Menus */
+QMenuBar {
+    background-color: white;
+    color: black;
+}
+
+QMenuBar::item {
+    background-color: white;
+    color: black;
+}
+
+QMenuBar::item:selected {
+    background-color: #d3d3d3; /* Light gray for hover */
+    color: black;
+}
+
+QMenu {
+    background-color: white;
+    color: black;
+}
+
+QMenu::item {
+    background-color: white;
+    color: black;
+}
+
+QMenu::item:selected {
+    background-color: #d3d3d3; /* Light gray for hover */
+    color: black;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #f0f0f0; /* Light gray background */
+    color: black;
+    border: 1px solid #b3b3b3; /* Light border */
+    padding: 5px;
+}
+
+QPushButton::hover {
+    background-color: #d3d3d3; /* Light gray for hover */
+}
+
+/* Labels */
+QLabel {
+    color: black;
+}
+
+QDockWidget {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+}
+
+QDockWidget::title {
+    background-color: #e0e0e0; /* Background color of the title bar */
+    color: #000; /* Text color */
+    padding: 5px;
+    text-align: left; /* Align the text to the left */
+    font-weight: bold; /* Make the text bold */
+}
+
+/* Optionally, you can also target the title bar buttons (close, float) */
+QDockWidget QToolButton {
+    background-color: #f0f0f0; /* Same background as title bar */
+    color: black; /* Black icons or text on buttons */
+    border: none; /* Remove button borders */
+}
+
+/* Table headers */
+QHeaderView::section {
+    background-color: white;
+    color: black;
+    padding: 5px;
+    border: 1px solid #b3b3b3; /* Light border */
+}
+
+/* Tables */
+QTableView {
+    background-color: white;
+    color: black;
+    gridline-color: #b3b3b3; /* Light gray grid lines */
+}
+
+QTableView::item {
+    background-color: white;
+    color: black;
+}
+
+QTableView::item:selected {
+    background-color: #d3d3d3; /* Light gray for selected items */
+    color: black;
+}
+
+/* Text fields */
+QLineEdit {
+    background-color: white;
+    color: black;
+    border: 1px solid #b3b3b3; /* Light border */
+    padding: 5px;
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    background-color: white;
+    border: 1px solid #b3b3b3; /* Light border */
+    width: 15px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #d3d3d3; /* Light gray handle */
+    min-height: 20px;
+}
+
+QScrollBar:horizontal {
+    background-color: white;
+    border: 1px solid #b3b3b3; /* Light border */
+    height: 15px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #d3d3d3; /* Light gray handle */
+    min-width: 20px;
+}

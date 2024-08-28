@@ -1,0 +1,12 @@
+{
+    "name": "ExamplePlugin",
+    "version": "1.0.0",
+    "description": "A sample plugin for demonstration.",
+    "entry_point": "main.py",
+    "dependencies": [
+        "requests",
+        "flask"
+    ],
+    "communication_protocol": "REST",
+    "type": "UI"
+}
