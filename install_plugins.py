@@ -1,24 +1,20 @@
-# Example usage
 from core.plugins.plugin_installer import PluginInstaller
-import jaydebeapi
-
+import os
 
 if __name__ == "__main__":
-    # Connect to H2 database
-    conn = jaydebeapi.connect(
-        "org.h2.Driver",
-        "jdbc:h2:~/.flowforge/flowforge_db;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE",
-        ["sa", ""],
-        "D:/development/repos/gh/flowforge/h2/h2-2.3.232.jar"
-    )
+    # Set the database path
+    db_path = os.path.expanduser("~/.flowforge/flowforge_db")
 
-    installer = PluginInstaller(db_connection=conn)
+    # Initialize the PluginInstaller with the database path
+    installer = PluginInstaller(db_path=db_path)
 
     # Install a plugin
-    installer.install_plugin('plugins/example_ui_plugin')
+    plugin_path = os.path.join('plugins', 'example_ui_plugin')
+    installer.install_plugin('example_ui_plugin', plugin_path)
 
-    # Load all installed plugins
-    installed_plugins = installer.load_installed_plugins()
-    print(installed_plugins)
+    # Load all installed plugins (implement this method if necessary in PluginInstaller)
+    # installed_plugins = installer.load_installed_plugins()
+    # print(installed_plugins)
 
-    conn.close()
+    # Close the database connection
+    installer.close()

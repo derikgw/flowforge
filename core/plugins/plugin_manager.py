@@ -2,13 +2,16 @@ import os
 from core.events.event_bus import event_bus
 from core.logging.logger import Logger
 from core.plugins.plugin_base import Plugin
+from core.plugins.plugin_installer import PluginInstaller  # Assuming this handles database operations
+
 
 class PluginManager:
-    def __init__(self, plugins_directory):
+    def __init__(self, plugins_directory, db_path):
         self.plugins = []
         self.plugin_instances = {}
         self.logger = Logger.get_logger('PluginManager')
         self.plugins_directory = plugins_directory
+        self.plugin_installer = PluginInstaller(db_path)  # Pass the database path
 
     def initialize_plugins(self, main_window):
         self.plugins = self.load_plugins()
@@ -35,19 +38,36 @@ class PluginManager:
     def _load_plugin(self, plugin_name, plugin_path):
         try:
             plugin_type = "UI" if "ui" in plugin_name.lower() else "Function"
-            # Assuming Plugin is the base class; actual plugins should subclass Plugin
             return Plugin(plugin_name, plugin_type, plugin_path)
         except Exception as e:
             self.logger.error(f"Failed to load plugin {plugin_name}: {e}")
             return None
 
     def get_plugins_by_type(self, plugin_type):
-        """Return a list of plugins filtered by type."""
         return [plugin for plugin in self.plugins if plugin.get_type() == plugin_type]
 
     def get_all_plugins(self):
-        """Return all loaded plugins."""
         return self.plugins
+
+    def is_plugin_registered(self, plugin_name):
+        """Check if the plugin is registered in the database."""
+        return self.plugin_installer.is_plugin_registered(plugin_name)
+
+    def install_plugin(self, plugin_name, plugin_path):
+        """Install the plugin and register it in the database."""
+        try:
+            self.plugin_installer.install_plugin(plugin_name, plugin_path)
+            self.logger.info(f"Plugin {plugin_name} installed successfully.")
+        except Exception as e:
+            self.logger.error(f"Failed to install plugin {plugin_name}: {e}")
+
+    def uninstall_plugin(self, plugin_name):
+        """Uninstall the plugin and remove it from the database."""
+        try:
+            self.plugin_installer.uninstall_plugin(plugin_name)
+            self.logger.info(f"Plugin {plugin_name} uninstalled successfully.")
+        except Exception as e:
+            self.logger.error(f"Failed to uninstall plugin {plugin_name}: {e}")
 
     def stop_all_plugins(self):
         for plugin in self.plugins:

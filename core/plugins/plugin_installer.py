@@ -1,74 +1,112 @@
+import os
 import json
 import subprocess
-import os
 import jaydebeapi
+from core.logging.logger import Logger
 
 
 class PluginInstaller:
-    def __init__(self, db_connection):
-        self.db_connection = db_connection
+    def __init__(self, db_path):
+        self.logger = Logger.get_logger("app_logger")
+        self.db_path = db_path
+        self.conn = self._connect_to_db()
 
-    def install_plugin(self, plugin_dir):
-        """Install a plugin from the given directory."""
+    def _connect_to_db(self):
+        """Establish a connection to the H2 database."""
         try:
-            plugin_json_path = os.path.join(plugin_dir, 'plugin.json')
-            with open(plugin_json_path, 'r') as f:
-                plugin_info = json.load(f)
-
-            # Install dependencies
-            self._install_dependencies(plugin_info['dependencies'])
-
-            # Register plugin in the H2 database
-            self._register_plugin(plugin_info, plugin_dir)
-
-            print(f"Plugin {plugin_info['name']} installed successfully.")
-        except Exception as e:
-            print(f"Failed to install plugin: {e}")
-
-    def _install_dependencies(self, dependencies):
-        """Install the plugin's dependencies using pip."""
-        for dependency in dependencies:
-            subprocess.check_call([os.sys.executable, "-m", "pip", "install", dependency])
-
-    def _register_plugin(self, plugin_info, plugin_dir):
-        """Register the plugin's metadata in the H2 database."""
-        cursor = self.db_connection.cursor()
-
-        # Ensure the plugins table exists
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS plugins (
-                id INTEGER AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255),
-                version VARCHAR(50),
-                description TEXT,
-                entry_point VARCHAR(255),
-                type VARCHAR(50),
-                path VARCHAR(255),
-                communication_protocol VARCHAR(50)
+            jar_path = os.path.join(os.environ['PROJECT_ROOT'], 'libs', 'h2-2.3.232.jar')  # Corrected jar path
+            conn = jaydebeapi.connect(
+                'org.h2.Driver',
+                f'jdbc:h2:{self.db_path};AUTO_SERVER=TRUE',
+                ['sa', ''],
+                jar_path
             )
-        ''')
+            return conn
+        except Exception as e:
+            self.logger.error(f"Failed to connect to the database: {e}")
+            return None
 
-        # Insert the plugin data into the table
-        cursor.execute('''
-            INSERT INTO plugins (name, version, description, entry_point, type, path, communication_protocol)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            plugin_info['name'],
-            plugin_info['version'],
-            plugin_info['description'],
-            plugin_info['entry_point'],
-            plugin_info['type'],
-            plugin_dir,
-            plugin_info['communication_protocol']
-        ))
+    def _execute_query(self, query, params=None):
+        """Helper function to execute SQL queries."""
+        try:
+            cursor = self.conn.cursor()
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            return cursor
+        except Exception as e:
+            self.logger.error(f"Database query failed: {e}")
+            return None
 
-        self.db_connection.commit()
-        cursor.close()
+    def is_plugin_registered(self, plugin_name):
+        """Check if the plugin is registered in the database."""
+        query = "SELECT COUNT(*) FROM plugins WHERE name = ?"
+        cursor = self._execute_query(query, [plugin_name])
+        if cursor:
+            count = cursor.fetchone()[0]
+            return count > 0
+        return False
 
-    def load_installed_plugins(self):
-        """Load all installed plugins from the H2 database."""
-        cursor = self.db_connection.cursor()
-        cursor.execute('SELECT * FROM plugins')
-        plugins = cursor.fetchall()
-        cursor.close()
-        return plugins
+    def install_plugin(self, plugin_name, plugin_path):
+        """Install a plugin by creating its virtual environment and registering it in the database."""
+        try:
+            with open(os.path.join(plugin_path, 'plugin.json'), 'r') as f:
+                plugin_config = json.load(f)
+
+            # Create a virtual environment for the plugin
+            venv_path = os.path.join(plugin_path, '.venv')
+            subprocess.check_call(['python', '-m', 'venv', venv_path])
+
+            pip_executable = os.path.join(venv_path, 'Scripts', 'pip')
+            for dependency in plugin_config.get('dependencies', []):
+                subprocess.check_call([pip_executable, 'install', dependency])
+
+            # Prepare and execute the SQL query to register the plugin
+            query = """
+                INSERT INTO plugins (name, version, description, entry_point, type, path, communication_protocol)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """
+            params = [
+                plugin_config['name'],
+                plugin_config['version'],
+                plugin_config['description'],
+                plugin_config['entry_point'],
+                plugin_config['type'],
+                plugin_path,
+                plugin_config['communication_protocol']
+            ]
+            cursor = self._execute_query(query, params)
+
+            if cursor:
+                self.conn.commit()  # Commit the transaction
+                self.logger.info(f"Plugin {plugin_name} registered in the database successfully.")
+            else:
+                self.logger.error(f"Failed to register plugin {plugin_name} in the database.")
+
+        except Exception as e:
+            self.logger.error(f"Failed to install plugin {plugin_name}: {e}")
+
+    def uninstall_plugin(self, plugin_name):
+        """Uninstall a plugin by removing it from the database."""
+        try:
+            query = "SELECT path FROM plugins WHERE name = ?"
+            cursor = self._execute_query(query, [plugin_name])
+            plugin_path = cursor.fetchone()[0]
+
+            venv_path = os.path.join(plugin_path, '.venv')
+            if os.path.exists(venv_path):
+                subprocess.check_call(['rm', '-rf', venv_path])
+
+            query = "DELETE FROM plugins WHERE name = ?"
+            self._execute_query(query, [plugin_name])
+            self.conn.commit()
+
+            self.logger.info(f"Plugin {plugin_name} uninstalled successfully.")
+        except Exception as e:
+            self.logger.error(f"Failed to uninstall plugin {plugin_name}: {e}")
+
+    def close(self):
+        """Close the database connection."""
+        if self.conn:
+            self.conn.close()
